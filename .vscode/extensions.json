@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    // Roblox Development
+    "evaera.vscode-rojo",
+    "JohnnyMorganz.luau-lsp",
+    "JohnnyMorganz.stylua",
+
+    // Code Quality
+    "streetsidesoftware.code-spell-checker",
+    "usernamehw.errorlens",
+
+    // Git
+    "eamodio.gitlens"
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  // Luau Language Server Configuration
+  "Luau.require.mode": "relativeToFile",
+  "Luau.require.directoryAliases": {
+    "ReplicatedStorage": "src/ReplicatedStorage",
+    "ServerScriptService": "src/ServerScriptService",
+    "ServerStorage": "src/ServerStorage",
+    "StarterGui": "src/StarterGui",
+    "StarterPlayer": "src/StarterPlayer"
+  },
+  "Luau.completion.enabled": true,
+  "Luau.completion.suggestImports": true,
+  "Luau.diagnostics.enabled": true,
+  "Luau.diagnostics.strictDatamodelTypes": true,
+  "Luau.typeChecking.mode": "strict",
+  "Luau.inlayHints.functionReturnTypes": true,
+  "Luau.inlayHints.parameterNames": "literals",
+  "Luau.inlayHints.variableTypes": true,
+
+  // File Associations
+  "files.associations": {
+    "*.lua": "luau",
+    "*.luau": "luau",
+    "*.project.json": "jsonc",
+    "*.model.json": "jsonc"
+  },
+
+  // Editor Settings for Lua/Luau
+  "editor.tabSize": 4,
+  "editor.insertSpaces": false,
+  "editor.detectIndentation": true,
+  "[luau]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": false,
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": "JohnnyMorganz.stylua"
+  },
+  "[lua]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": false,
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": "JohnnyMorganz.stylua"
+  },
+
+  // File Exclusions
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+  },
+
+  // Search Exclusions
+  "search.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/.robloxrc": true
+  },
+
+  // Rojo Integration
+  "rojo.robloxStudioPath": "",
+  "rojo.projectFile": "default.project.json",
+
+  // Git Configuration
+  "git.ignoreLimitWarning": true,
+
+  // Terminal Configuration
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+
+  // Recommendations
+  "extensions.ignoreRecommendations": false
+}

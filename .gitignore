@@ -1,0 +1,43 @@
+# Rojo
+*.rbxl
+*.rbxlx
+*.rbxm
+*.rbxmx
+build/
+
+# Roblox Studio
+*.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.vscode/.rojorc
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Temp files
+tmp/
+temp/
+*.tmp
+
+# Node (if using npm packages)
+node_modules/
+package-lock.json
+
+# Wally (Roblox package manager)
+Packages/
+wally.lock
+
+# StyLua
+*.styluaignore
+
+# Environment
+.env
+.env.local

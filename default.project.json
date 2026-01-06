@@ -1,0 +1,73 @@
+{
+  "name": "HomeworkDestroyer",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "$path": "src/ReplicatedStorage"
+    },
+
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "$path": "src/ServerScriptService"
+    },
+
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "$path": "src/ServerStorage"
+    },
+
+    "StarterGui": {
+      "$className": "StarterGui",
+      "$path": "src/StarterGui"
+    },
+
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "$path": "src/StarterPlayer"
+    },
+
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": {
+        "FilteringEnabled": true
+      },
+      "Baseplate": {
+        "$className": "Part",
+        "$properties": {
+          "Anchored": true,
+          "Color": [0.38, 0.37, 0.38],
+          "Position": [0, -10, 0],
+          "Size": [512, 20, 512]
+        }
+      }
+    },
+
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "Ambient": [0, 0, 0],
+        "Brightness": 2,
+        "ColorShift_Bottom": [0, 0, 0],
+        "ColorShift_Top": [0, 0, 0],
+        "EnvironmentDiffuseScale": 0.5,
+        "EnvironmentSpecularScale": 0.5,
+        "GlobalShadows": true,
+        "OutdoorAmbient": [0.5, 0.5, 0.5],
+        "Technology": "ShadowMap"
+      }
+    },
+
+    "SoundService": {
+      "$className": "SoundService",
+      "$properties": {
+        "RespectFilteringEnabled": true
+      }
+    },
+
+    "ReplicatedFirst": {
+      "$className": "ReplicatedFirst"
+    }
+  }
+}

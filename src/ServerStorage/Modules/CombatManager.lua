@@ -24,6 +24,7 @@ local HomeworkConfig = require(script.Parent.HomeworkConfig)
 local StatsCalculator = require(script.Parent.StatsCalculator)
 local UpgradesConfig = require(script.Parent.UpgradesConfig)
 local AchievementManager = require(script.Parent.AchievementManager)
+local ServerSoundManager = require(script.Parent.ServerSoundManager)
 
 -- Remote events
 local RemoteEventsModule = require(ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("RemoteEvents"))
@@ -56,6 +57,9 @@ function CombatManager.Initialize()
 		DamageDealtEvent.Name = "DamageDealt"
 		DamageDealtEvent.Parent = Remotes
 	end
+
+	-- Initialize ServerSoundManager
+	ServerSoundManager:Initialize()
 
 	print("CombatManager: Initialized")
 end
@@ -98,9 +102,15 @@ function CombatManager.HandleClick(player, homeworkModel, homeworkSpawner, playe
 	-- Show damage feedback
 	CombatManager.ShowDamageNumber(player, homeworkModel, damageInfo)
 
-	-- If homework destroyed, award rewards
+	-- Play hit sound
+	local toolData = CombatManager.GetEquippedTool(playerData)
+	local position = homeworkModel.PrimaryPart and homeworkModel.PrimaryPart.Position or Vector3.new(0, 0, 0)
+	ServerSoundManager:PlayHitSound(player, position, toolData.ID, toolData.Category, damageInfo.isCritical)
+
+	-- If homework destroyed, award rewards and play destroy sound
 	if destroyed then
 		CombatManager.AwardRewards(player, playerData, homeworkInstance)
+		ServerSoundManager:PlayDestroySound(position)
 	end
 
 	-- Update click cooldown
@@ -221,37 +231,45 @@ function CombatManager.PlayDestructionEffect(model, isBoss)
 
 	local position = model.PrimaryPart.Position
 
-	-- Create particle effect
-	local explosion = Instance.new("Part")
-	explosion.Size = isBoss and Vector3.new(10, 10, 10) or Vector3.new(5, 5, 5)
-	explosion.Position = position
-	explosion.Anchored = true
-	explosion.CanCollide = false
-	explosion.Transparency = 1
-	explosion.Parent = workspace
+	-- Send effect event to all clients in range
+	local PlayEffectEvent = RemoteEventsModule.GetEvent("PlayEffect")
+	if PlayEffectEvent then
+		-- Fire to all players within render distance
+		for _, player in ipairs(Players:GetPlayers()) do
+			if player.Character and player.Character.PrimaryPart then
+				local distance = (player.Character.PrimaryPart.Position - position).Magnitude
+				if distance < 500 then -- Within render distance
+					PlayEffectEvent:FireClient(player, {
+						Type = "Destruction",
+						Position = position,
+						ExtraData = {
+							IsBoss = isBoss
+						}
+					})
+				end
+			end
+		end
+	end
 
-	-- Add particle emitter
-	local particles = Instance.new("ParticleEmitter")
-	particles.Texture = "rbxasset://textures/particles/sparkles_main.dds"
-	particles.Color = ColorSequence.new(Color3.fromRGB(255, 255, 0))
-	particles.Size = NumberSequence.new(isBoss and 2 or 1)
-	particles.Lifetime = NumberRange.new(0.5, 1)
-	particles.Rate = isBoss and 100 or 50
-	particles.Speed = NumberRange.new(10, 20)
-	particles.SpreadAngle = Vector2.new(180, 180)
-	particles.Parent = explosion
-
-	-- Emit and cleanup
-	particles:Emit(particles.Rate)
-
-	game:GetService("Debris"):AddItem(explosion, 2)
-
-	-- Play sound (if sound exists)
+	-- Play sound (server-side for all players to hear)
 	local destroySound = Instance.new("Sound")
 	destroySound.SoundId = "rbxassetid://12222216" -- Explosion sound
 	destroySound.Volume = isBoss and 1 or 0.5
-	destroySound.Parent = explosion
+	destroySound.Parent = workspace
+	destroySound.PlayOnRemove = false
+
+	-- Position sound at destruction location
+	local soundPart = Instance.new("Part")
+	soundPart.Transparency = 1
+	soundPart.CanCollide = false
+	soundPart.Anchored = true
+	soundPart.Size = Vector3.new(1, 1, 1)
+	soundPart.Position = position
+	soundPart.Parent = workspace
+	destroySound.Parent = soundPart
+
 	destroySound:Play()
+	game:GetService("Debris"):AddItem(soundPart, 3)
 end
 
 --[[
@@ -266,7 +284,8 @@ function CombatManager.ShowDamageNumber(player, homeworkModel, damageInfo)
 	DamageDealtEvent:FireClient(player, {
 		Position = homeworkModel.PrimaryPart and homeworkModel.PrimaryPart.Position or Vector3.new(0, 0, 0),
 		Damage = damageInfo.totalDamage,
-		IsCritical = damageInfo.isCritical
+		IsCritical = damageInfo.isCritical,
+		HomeworkType = damageInfo.targetType
 	})
 end
 
@@ -324,6 +343,9 @@ function CombatManager.CheckLevelUp(player, playerData)
 		playerData.Experience = playerData.Experience - xpRequired
 
 		print(string.format("%s leveled up to Level %d!", player.Name, playerData.Level))
+
+		-- Play level up sound
+		ServerSoundManager:PlayLevelUpSound(player)
 
 		-- Award level rewards
 		CombatManager.AwardLevelRewards(player, playerData, playerData.Level)

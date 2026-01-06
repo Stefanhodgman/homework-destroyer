@@ -242,6 +242,20 @@ local REMOTE_CONFIGS = {
 		Description = "Skip the entire tutorial",
 		Parameters = "none"
 	},
+
+	-- Sound Events
+	{
+		Name = "PlaySound",
+		Type = "Event",
+		Description = "Play a 2D sound on client (UI, ambient, etc.)",
+		Parameters = "soundName (string), options (table: {Volume, Pitch})"
+	},
+	{
+		Name = "PlaySoundAt",
+		Type = "Event",
+		Description = "Play a 3D sound at a world position",
+		Parameters = "soundName (string), position (Vector3), volumeOverride (number)"
+	},
 }
 
 -- Initialize all RemoteEvents and RemoteFunctions

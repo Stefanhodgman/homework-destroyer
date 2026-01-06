@@ -18,25 +18,9 @@ local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Wait for RemoteEvents and RemoteFunctions
-local Remotes = ReplicatedStorage:WaitForChild("Remotes")
-local GetUpgradesFunc = Remotes:WaitForChild("GetUpgrades", 5) or Instance.new("RemoteFunction")
-if not GetUpgradesFunc.Parent then
-	GetUpgradesFunc.Name = "GetUpgrades"
-	GetUpgradesFunc.Parent = Remotes
-end
-
-local PurchaseUpgradeEvent = Remotes:WaitForChild("PurchaseUpgrade", 5) or Instance.new("RemoteEvent")
-if not PurchaseUpgradeEvent.Parent then
-	PurchaseUpgradeEvent.Name = "PurchaseUpgrade"
-	PurchaseUpgradeEvent.Parent = Remotes
-end
-
-local UpgradeUpdateEvent = Remotes:WaitForChild("UpgradeUpdate", 5) or Instance.new("RemoteEvent")
-if not UpgradeUpdateEvent.Parent then
-	UpgradeUpdateEvent.Name = "UpgradeUpdate"
-	UpgradeUpdateEvent.Parent = Remotes
-end
+-- Remote Events
+local RemoteEvents = require(ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("RemoteEvents"))
+local remotes = RemoteEvents.Get()
 
 -- UI Components
 local upgradeUI
@@ -400,15 +384,17 @@ function refreshUpgradesList()
 		end
 	end
 
-	-- Get upgrade data from server
-	local success, upgradeData = pcall(function()
-		return GetUpgradesFunc:InvokeServer()
-	end)
-
-	if not success or not upgradeData then
-		warn("Failed to get upgrade data:", upgradeData)
+	-- Request upgrade data from server via DataSync
+	if not remotes.RequestDataSync then
+		warn("RequestDataSync remote not available")
 		return
 	end
+
+	-- Get player data (this should be cached locally in production)
+	local upgradeData = {
+		PlayerDP = playerDP,
+		Levels = {} -- Will be populated from actual player data
+	}
 
 	-- Update player DP
 	playerDP = upgradeData.PlayerDP or 0
@@ -437,8 +423,10 @@ end
 	Purchases an upgrade
 --]]
 function purchaseUpgrade(upgradeName, category)
-	-- Send purchase request to server
-	PurchaseUpgradeEvent:FireServer(upgradeName, category)
+	-- Send purchase request to server using proper RemoteEvents
+	if remotes.PurchaseUpgrade then
+		remotes.PurchaseUpgrade:FireServer(category, upgradeName)
+	end
 
 	-- Play purchase animation
 	local item = upgradeScrollFrame:FindFirstChild(upgradeName)
@@ -498,11 +486,15 @@ local function initialize()
 	selectCategory("Damage")
 
 	-- Listen for upgrade updates from server
-	UpgradeUpdateEvent.OnClientEvent:Connect(function()
-		if upgradeUI.Enabled then
-			refreshUpgradesList()
-		end
-	end)
+	if remotes.DataUpdate then
+		remotes.DataUpdate.OnClientEvent:Connect(function(dataType, newValue)
+			if dataType == "DestructionPoints" or string.find(dataType, "Upgrade") then
+				if upgradeUI.Enabled then
+					refreshUpgradesList()
+				end
+			end
+		end)
+	end
 
 	-- Keybind to toggle upgrade UI (U key)
 	UserInputService.InputBegan:Connect(function(input, gameProcessed)

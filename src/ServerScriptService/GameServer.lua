@@ -41,6 +41,8 @@ local PrestigeManager = require(ServerStorage.Modules.PrestigeManager)
 local ShopManager = require(ServerStorage.Modules.ShopManager)
 local GamepassManager = require(ServerStorage.Modules.GamepassManager)
 local HomeworkSpawner = require(ServerStorage.Modules.HomeworkSpawner)
+local HomeworkAnimator = require(ServerScriptService.HomeworkAnimator)
+local SchoolBuilder = require(ServerScriptService.SchoolBuilder)
 
 -- Configuration
 local CONFIG = {
@@ -84,6 +86,9 @@ local BossTimers = {}
 
 -- Homework spawners per zone
 local ZoneHomeworkSpawners = {}
+
+-- Homework animator instance
+local AnimatorInstance = nil
 
 --[[
 	Calculates XP required for a specific level
@@ -778,6 +783,22 @@ function GameServer:SetupHomeworkClickDetection()
 			-- Handle the click through CombatManager
 			CombatManager.HandleClick(player, homeworkModel, spawner, playerData)
 		end)
+
+		-- Register with animator for visual effects
+		if AnimatorInstance then
+			local homeworkData = homeworkModel:FindFirstChild("HomeworkData")
+			local isBoss = false
+
+			-- Check if this is a boss from the spawner
+			if spawner then
+				local homeworkInstance = spawner:GetHomeworkInstance(homeworkModel)
+				if homeworkInstance then
+					isBoss = homeworkInstance.IsBoss or false
+				end
+			end
+
+			AnimatorInstance:RegisterHomework(homeworkModel, isBoss)
+		end
 	end
 
 	-- Connect to existing and future homework
@@ -850,6 +871,10 @@ function GameServer:Initialize()
 	-- Export GameServer to global FIRST to avoid circular dependency issues
 	_G.GameServer = GameServer
 
+	-- Build the central school building (world structure first)
+	warn("[GameServer] Building central school...")
+	SchoolBuilder:Initialize()
+
 	-- Initialize RemoteEvents (must be first for other systems to use)
 	warn("[GameServer] Initializing RemoteEvents...")
 	-- RemoteEvents auto-initializes on require if on server
@@ -869,6 +894,11 @@ function GameServer:Initialize()
 	-- Initialize ZoneManager (depends on DataManager)
 	warn("[GameServer] Initializing ZoneManager...")
 	ZoneManager.Init()
+
+	-- Initialize HomeworkAnimator
+	warn("[GameServer] Initializing HomeworkAnimator...")
+	AnimatorInstance = HomeworkAnimator.new()
+	AnimatorInstance:Start()
 
 	-- Initialize HomeworkSpawners for all zones
 	warn("[GameServer] Initializing HomeworkSpawners...")

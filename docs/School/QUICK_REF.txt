@@ -1,0 +1,99 @@
+HOMEWORK DESTROYER - SCHOOL BUILDING QUICK REFERENCE
+=====================================================
+
+FILE LOCATIONS:
+--------------
+Implementation: src/ServerScriptService/SchoolBuilder.lua
+Integration:    src/ServerScriptService/GameServer.lua (lines 45, 876)
+Documentation:  SCHOOL_BUILDING_IMPLEMENTATION.md
+
+BUILDING COORDINATES:
+--------------------
+School Center:    (0, 0, -100)
+Foundation:       (-42 to 42, -1, -132 to -68)
+Building Floors:  Y = 0 to 30 (3 floors x 10 studs)
+Spawn Point:      (0, 1, -115) - 15 studs in front of entrance
+
+FLOOR BREAKDOWN:
+----------------
+Floor 1 (Y=5):    Classrooms 101-104
+Floor 2 (Y=15):   Classrooms 201-204
+Floor 3 (Y=25):   Classrooms 301-304
+Roof (Y=30.5):    Dark slate roof
+
+CLASSROOM LAYOUT (per floor):
+-----------------------------
+Front-Left:   X=-25, Z=-15  (Room X01)
+Front-Right:  X=+25, Z=-15  (Room X02)
+Back-Left:    X=-25, Z=+15  (Room X03)
+Back-Right:   X=+25, Z=+15  (Room X04)
+
+DECORATIONS:
+-----------
+Flagpole:     (-35, 0, -135)
+School Sign:  (0, 2, -105) - "HOMEWORK DESTROYER ACADEMY"
+Lamp Posts:   4 corners around building
+Grass Patches: 4 corners (20x20 each)
+
+FEATURES COUNT:
+--------------
+Classrooms:      12 total
+Student Desks:   144 (12 per classroom)
+Chalkboards:     12 (1 per classroom)
+Windows:         50+ (exterior walls)
+Doors:           2 (main entrance, double doors)
+Ceiling Lights:  40+ (3 per classroom + hallways)
+Lamp Posts:      4 (exterior corners)
+Stairs:          40 steps (20 per floor transition)
+
+CLASSROOM CONTENTS (each):
+-------------------------
+- 1 Chalkboard (6 studs wide, green)
+- 12 Desks (wood + metal, arranged 4 rows x 3 columns)
+- 3 Ceiling Lights (evenly spaced)
+- Floor (concrete, beige)
+- Ceiling (smooth plastic, white)
+
+INITIALIZATION:
+--------------
+Called from: GameServer:Initialize()
+Runs: BEFORE zones, spawners, player systems
+Logs: "[SchoolBuilder] School construction complete!"
+
+TESTING CHECKLIST:
+-----------------
+[ ] School appears at (0, 0, -100)
+[ ] 3 floors visible
+[ ] Red brick exterior walls
+[ ] Windows with glass visible
+[ ] Main entrance doors present
+[ ] Spawn point in front of building
+[ ] All 12 classrooms accessible
+[ ] Stairs connect floors
+[ ] Interior lights working
+[ ] Exterior lamp posts lit
+[ ] Flagpole visible
+[ ] School sign readable
+[ ] No collision issues
+[ ] No part gaps/overlaps
+[ ] Performance acceptable
+
+CODE STRUCTURE:
+--------------
+SchoolBuilder module exports:
+  - Initialize()    -> Main entry, builds school
+  - BuildSchool()   -> Construction logic
+  - DestroySchool() -> Cleanup function
+
+Helper functions (local):
+  - CreatePart()
+  - CreateWindow()
+  - CreateDoor()
+  - CreateCeilingLight()
+  - CreateDesk()
+  - CreateChalkboard()
+  - BuildClassroom()
+  - BuildHallway()
+
+Total Lines: 930
+Total Size:  24 KB

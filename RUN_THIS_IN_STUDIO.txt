@@ -1,0 +1,28 @@
+========================================
+  BUILD YOUR GAME WORLD - DO THIS NOW
+========================================
+
+1. Open HomeworkDestroyer.rbxl in Roblox Studio
+
+2. Press: Ctrl + ' (Control + Apostrophe)
+   This opens the Command Bar at the bottom
+
+3. Open this file in a text editor:
+   WorldSetup.lua
+
+4. Copy the ENTIRE contents
+
+5. Paste into Command Bar
+
+6. Press ENTER
+
+7. Watch the Output window - you'll see:
+   - 10 zones created
+   - 150 spawn points
+   - Zone boundaries
+   - Labels
+   - Player spawn
+
+8. Press Play button to test
+
+DONE! Your game world is built.
